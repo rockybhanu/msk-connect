@@ -3,7 +3,7 @@ resource "aws_vpc" "msk_vpc" {
 }
 
 resource "aws_subnet" "msk_subnet" {
-  count             = 2  # Create two subnets
+  count             = 2 # Create two subnets
   vpc_id            = aws_vpc.msk_vpc.id
   cidr_block        = "10.0.${count.index + 1}.0/24"
   availability_zone = data.aws_availability_zones.available.names[count.index]
@@ -21,7 +21,7 @@ resource "aws_security_group" "msk_security_group" {
     from_port   = 9092
     to_port     = 9092
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Allow access from anywhere for dev testing
+    cidr_blocks = ["0.0.0.0/0"] # Allow access from anywhere for dev testing
   }
 
   egress {
