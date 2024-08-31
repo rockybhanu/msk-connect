@@ -17,7 +17,7 @@ resource "aws_msk_cluster" "ramanuj-dev" {
 
     connectivity_info {
       public_access {
-        type = "SERVICE_PROVIDED_EIPS" # This enables public access to the brokers
+        type = "DISABLED" # This enables public access to the brokers
       }
     }
   }
