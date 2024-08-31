@@ -1,6 +1,6 @@
-resource "aws_msk_cluster" "example" {
-  cluster_name           = "example-cluster"
-  kafka_version          = "2.8.1"
+resource "aws_msk_cluster" "ramanuj-dev" {
+  cluster_name           = "ramanuj-dev-cluster"
+  kafka_version          = "3.6.0"
   number_of_broker_nodes = 2 # Single node for cost savings
 
   broker_node_group_info {

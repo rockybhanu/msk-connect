@@ -1,11 +1,11 @@
-resource "aws_mskconnect_custom_plugin" "example" {
-  name         = "debezium-example"
+resource "aws_mskconnect_custom_plugin" "ramanuj-dev" {
+  name         = "debezium-ramanuj-dev"
   content_type = "ZIP"
 
   location {
     s3 {
-      bucket_arn = aws_s3_bucket.example.arn
-      file_key   = aws_s3_object.example.key
+      bucket_arn = aws_s3_bucket.ramanuj-dev.arn
+      file_key   = aws_s3_object.ramanuj-dev.key
     }
   }
 }
@@ -43,7 +43,7 @@ resource "aws_mskconnect_connector" "debezium_postgres_connector" {
     "database.server.name"                     = "dbserver1"
     "database.whitelist"                       = "crm"
     "table.whitelist"                          = "public.customer_records"
-    "database.history.kafka.bootstrap.servers" = aws_msk_cluster.example.bootstrap_brokers_tls
+    "database.history.kafka.bootstrap.servers" = aws_msk_cluster.ramanuj-dev.bootstrap_brokers_tls
     "database.history.kafka.topic"             = "schema-changes.crm"
     "include.schema.changes"                   = "true"
     "snapshot.mode"                            = "initial"
@@ -55,7 +55,7 @@ resource "aws_mskconnect_connector" "debezium_postgres_connector" {
 
   kafka_cluster {
     apache_kafka_cluster {
-      bootstrap_servers = aws_msk_cluster.example.bootstrap_brokers_tls
+      bootstrap_servers = aws_msk_cluster.ramanuj-dev.bootstrap_brokers_tls
 
       vpc {
         security_groups = [aws_security_group.msk_security_group.id]
@@ -74,8 +74,8 @@ resource "aws_mskconnect_connector" "debezium_postgres_connector" {
 
   plugin {
     custom_plugin {
-      arn      = aws_mskconnect_custom_plugin.example.arn
-      revision = aws_mskconnect_custom_plugin.example.latest_revision
+      arn      = aws_mskconnect_custom_plugin.ramanuj-dev.arn
+      revision = aws_mskconnect_custom_plugin.ramanuj-dev.latest_revision
     }
   }
 
