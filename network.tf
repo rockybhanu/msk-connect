@@ -16,10 +16,10 @@ resource "aws_route_table" "public_route_table" {
 }
 
 resource "aws_subnet" "msk_subnet" {
-  count             = 2 # Create two subnets
-  vpc_id            = aws_vpc.msk_vpc.id
-  cidr_block        = "10.0.${count.index + 1}.0/24"
-  availability_zone = data.aws_availability_zones.available.names[count.index]
+  count                   = 2 # Create two subnets
+  vpc_id                  = aws_vpc.msk_vpc.id
+  cidr_block              = "10.0.${count.index + 1}.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = true # Enable public IP assignment
 }
 
