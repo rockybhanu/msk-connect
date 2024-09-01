@@ -25,41 +25,31 @@ resource "aws_mskconnect_connector" "debezium_postgres_connector" {
   }
 
   connector_configuration = {
-    "connector.class"                                                     = "io.debezium.connector.postgresql.PostgresConnector"
-    "tasks.max"                                                           = "1"
-    "database.hostname"                                                   = "postgres.ramanuj.dev"
-    "database.port"                                                       = "30032"
-    "database.user"                                                       = jsondecode(data.aws_secretsmanager_secret_version.db_credentials.secret_string)["username"]
-    "database.password"                                                   = jsondecode(data.aws_secretsmanager_secret_version.db_credentials.secret_string)["password"]
-    "database.dbname"                                                     = "crm"
-    "database.server.name"                                                = "dbserver1"
-    "database.whitelist"                                                  = "crm"
-    "table.whitelist"                                                     = "public.customer_records"
-    "database.history.kafka.bootstrap.servers"                            = aws_msk_cluster.ramanuj-dev.bootstrap_brokers_tls
-    "database.history.kafka.topic"                                        = "schema-changes.crm"
-    "include.schema.changes"                                              = "true"
-    "snapshot.mode"                                                       = "initial"
-    "transforms.unwrap.type"                                              = "io.debezium.transforms.ExtractNewRecordState"
-    "transforms.unwrap.add.headers"                                       = "op"
-    "key.converter.schemas.enable"                                        = "true"
-    "value.converter.schemas.enable"                                      = "true"
-    "schema.history.internal.kafka.bootstrap.servers"                     = aws_msk_cluster.ramanuj-dev.bootstrap_brokers_tls
-    "schema.history.internal.consumer.security.protocol"                  = "SASL_SSL"
-    "schema.history.internal.consumer.sasl.mechanism"                     = "AWS_MSK_IAM"
-    "schema.history.internal.consumer.sasl.jaas.config"                   = "software.amazon.msk.auth.iam.IAMLoginModule required;"
-    "schema.history.internal.consumer.sasl.client.callback.handler.class" = "software.amazon.msk.auth.iam.IAMClientCallbackHandler"
-    "schema.history.internal.producer.security.protocol"                  = "SASL_SSL"
-    "schema.history.internal.producer.sasl.mechanism"                     = "AWS_MSK_IAM"
-    "schema.history.internal.producer.sasl.jaas.config"                   = "software.amazon.msk.auth.iam.IAMLoginModule required;"
-    "schema.history.internal.producer.sasl.client.callback.handler.class" = "software.amazon.msk.auth.iam.IAMClientCallbackHandler"
-    "request.timeout.ms"                                                  = "300000" # Increase the request timeout
-    "retry.backoff.ms"                                                    = "50000"  # Increase the retry backoff time
+    "connector.class"                = "io.debezium.connector.postgresql.PostgresConnector"
+    "tasks.max"                      = "1"
+    "database.hostname"              = "postgres.ramanuj.dev"
+    "database.port"                  = "30032"
+    "database.user"                  = jsondecode(data.aws_secretsmanager_secret_version.db_credentials.secret_string)["username"]
+    "database.password"              = jsondecode(data.aws_secretsmanager_secret_version.db_credentials.secret_string)["password"]
+    "database.dbname"                = "crm"
+    "database.server.name"           = "crm"
+    "topic.prefix"                   = "crm_cdc"
+    "table.include.list"             = "public.customer_records"
+    "include.schema.changes"         = "false"
+    "plugin.name"                    = "pgoutput"
+    "transforms"                     = "unwrap,insertKey"
+    "transforms.unwrap.type"         = "io.debezium.transforms.ExtractNewRecordState"
+    "transforms.insertKey.type"      = "org.apache.kafka.connect.transforms.ValueToKey"
+    "transforms.insertKey.fields"    = "id"
+    "key.converter"                  = "org.apache.kafka.connect.storage.StringConverter"
+    "value.converter"                = "org.apache.kafka.connect.json.JsonConverter"
+    "value.converter.schemas.enable" = true
+    "value.converter.decimal.format" = "numeric"
   }
 
   kafka_cluster {
     apache_kafka_cluster {
       bootstrap_servers = aws_msk_cluster.ramanuj-dev.bootstrap_brokers_sasl_iam # Use directly if available as a string
-
       vpc {
         security_groups = [aws_security_group.msk_security_group.id]
         subnets         = [aws_subnet.msk_subnet[0].id, aws_subnet.msk_subnet[1].id]
@@ -89,5 +79,11 @@ resource "aws_mskconnect_connector" "debezium_postgres_connector" {
         log_group = aws_cloudwatch_log_group.msk_connect_log_group.name
       }
     }
+  }
+
+  timeouts {
+    create = "90m"
+    update = "90m"
+    delete = "90m"
   }
 }

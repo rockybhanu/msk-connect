@@ -35,10 +35,25 @@ resource "aws_iam_policy" "msk_connect_policy" {
         Action = [
           "kafka-cluster:Connect",
           "kafka-cluster:DescribeCluster",
-          "kafka-cluster:GetBootstrapBrokers",
           "kafka-cluster:DescribeClusterV2",
+          "kafka-cluster:GetBootstrapBrokers",
           "kafka-cluster:AlterCluster",
-          "kafka-cluster:CreateCluster"
+          "kafka-cluster:CreateCluster",
+          "kafka-cluster:DescribeTopic",
+          "kafka-cluster:CreateTopic",
+          "kafka-cluster:DeleteTopic",
+          "kafka-cluster:WriteData",
+          "kafka-cluster:ReadData",
+          "kafka-cluster:AlterTopic",
+          "kafka-cluster:DescribeGroup",
+          "kafka-cluster:AlterGroup",
+          "kafka-cluster:ListTopics",
+          "kafka-cluster:ListClusters",
+          "kafka-cluster:ListGroups",
+          "kafka-cluster:DescribeNode",
+          "kafka-cluster:AlterCluster",
+          "kafka-cluster:DescribeConfiguration",
+          "kafka-cluster:DescribeConfigurationRevision"
         ]
         Resource = "*"
       }

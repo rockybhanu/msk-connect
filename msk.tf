@@ -17,7 +17,7 @@ resource "aws_msk_cluster" "ramanuj-dev" {
 
     connectivity_info {
       public_access {
-        type = "DISABLED" # This enables public access to the brokers
+        type = "SERVICE_PROVIDED_EIPS" # This enables public access to the brokers
       }
     }
   }
@@ -36,4 +36,8 @@ resource "aws_msk_cluster" "ramanuj-dev" {
     }
   }
 
+  configuration_info {
+    arn      = aws_msk_configuration.custom_config.arn
+    revision = aws_msk_configuration.custom_config.latest_revision
+  }
 }
