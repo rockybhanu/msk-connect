@@ -24,8 +24,16 @@ resource "aws_msk_cluster" "ramanuj-dev" {
 
   encryption_info {
     encryption_in_transit {
-      client_broker = "PLAINTEXT"
-      in_cluster    = false
+      client_broker = "TLS"
+      in_cluster    = true
     }
   }
+
+  client_authentication {
+    sasl {
+      iam   = true
+      scram = true
+    }
+  }
+
 }
