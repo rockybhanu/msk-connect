@@ -6,6 +6,21 @@ resource "aws_internet_gateway" "msk_igw" {
   vpc_id = aws_vpc.msk_vpc.id
 }
 
+resource "aws_subnet" "public_subnet" {
+  vpc_id                  = aws_vpc.msk_vpc.id
+  cidr_block              = "10.0.0.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[0]
+  map_public_ip_on_launch = true # Public subnet for NAT Gateway
+}
+
+resource "aws_subnet" "private_subnet" {
+  count                   = 2 # Two private subnets for MSK and MSK Connect
+  vpc_id                  = aws_vpc.msk_vpc.id
+  cidr_block              = "10.0.${count.index + 1}.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = false # Disable public IP assignment
+}
+
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.msk_vpc.id
 
@@ -15,17 +30,8 @@ resource "aws_route_table" "public_route_table" {
   }
 }
 
-resource "aws_subnet" "msk_subnet" {
-  count                   = 2 # Create two subnets
-  vpc_id                  = aws_vpc.msk_vpc.id
-  cidr_block              = "10.0.${count.index + 1}.0/24"
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
-  map_public_ip_on_launch = true # Enable public IP assignment
-}
-
 resource "aws_route_table_association" "public_association" {
-  count          = 2
-  subnet_id      = aws_subnet.msk_subnet[count.index].id
+  subnet_id      = aws_subnet.public_subnet.id
   route_table_id = aws_route_table.public_route_table.id
 }
 

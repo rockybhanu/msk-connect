@@ -1,7 +1,6 @@
 resource "aws_cloudwatch_log_group" "msk_connect_log_group" {
   name = "/aws/mskconnect/debezium-postgres-connector" # Provide a meaningful name for the log group
 }
-
 resource "aws_mskconnect_connector" "debezium_postgres_connector" {
   name                 = "debezium-postgres-connector"
   kafkaconnect_version = "2.7.1"
@@ -49,20 +48,20 @@ resource "aws_mskconnect_connector" "debezium_postgres_connector" {
 
   kafka_cluster {
     apache_kafka_cluster {
-      bootstrap_servers = aws_msk_cluster.ramanuj-dev.bootstrap_brokers_sasl_iam # Use directly if available as a string
+      bootstrap_servers = aws_msk_cluster.ramanuj-dev.bootstrap_brokers_sasl_iam
       vpc {
         security_groups = [aws_security_group.msk_security_group.id]
-        subnets         = [aws_subnet.msk_subnet[0].id, aws_subnet.msk_subnet[1].id]
+        subnets         = [aws_subnet.private_subnet[0].id, aws_subnet.private_subnet[1].id]
       }
     }
   }
 
   kafka_cluster_client_authentication {
-    authentication_type = "IAM" # Use IAM for secure authentication
+    authentication_type = "IAM"
   }
 
   kafka_cluster_encryption_in_transit {
-    encryption_type = "TLS" # Use TLS encryption for secure communication
+    encryption_type = "TLS"
   }
 
   plugin {
@@ -75,7 +74,7 @@ resource "aws_mskconnect_connector" "debezium_postgres_connector" {
   log_delivery {
     worker_log_delivery {
       cloudwatch_logs {
-        enabled   = true # Minimal logging to CloudWatch for basic inspection
+        enabled   = true
         log_group = aws_cloudwatch_log_group.msk_connect_log_group.name
       }
     }

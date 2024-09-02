@@ -6,13 +6,13 @@ resource "aws_security_group" "msk_security_group" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"] # Allow access from anywhere for dev testing
+    cidr_blocks = ["0.0.0.0/0"] # Allow access from the specific IP
   }
 
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"
+    protocol    = "-1"          # Allow all protocols
     cidr_blocks = ["0.0.0.0/0"] # Allow all outbound traffic
   }
 }

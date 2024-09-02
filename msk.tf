@@ -6,7 +6,7 @@ resource "aws_msk_cluster" "ramanuj-dev" {
   broker_node_group_info {
     instance_type = "kafka.t3.small" # Cheapest instance type for testing
 
-    client_subnets  = [aws_subnet.msk_subnet[0].id, aws_subnet.msk_subnet[1].id] # Use two subnets
+    client_subnets  = [aws_subnet.private_subnet[0].id, aws_subnet.private_subnet[1].id] # Use private subnets
     security_groups = [aws_security_group.msk_security_group.id]
 
     storage_info {
@@ -17,8 +17,7 @@ resource "aws_msk_cluster" "ramanuj-dev" {
 
     connectivity_info {
       public_access {
-        type = "SERVICE_PROVIDED_EIPS" # This enables public access to the brokers
-        # type = "DISABLED" # This enables public access to the brokers
+        type = "DISABLED" # Disabling public access, relying on NAT for internet
       }
     }
   }
