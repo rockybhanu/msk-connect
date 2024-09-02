@@ -51,7 +51,7 @@ resource "aws_mskconnect_connector" "debezium_postgres_connector" {
       bootstrap_servers = aws_msk_cluster.ramanuj-dev.bootstrap_brokers_sasl_iam
       vpc {
         security_groups = [aws_security_group.msk_security_group.id]
-        subnets         = [aws_subnet.private_subnet[0].id, aws_subnet.private_subnet[1].id]
+        subnets         = [aws_subnet.private_subnet[0].id, aws_subnet.private_subnet[1].id] # Private subnets
       }
     }
   }

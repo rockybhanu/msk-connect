@@ -4,7 +4,7 @@ resource "aws_eip" "nat_eip" {
 
 resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.nat_eip.id
-  subnet_id     = aws_subnet.public_subnet.id
+  subnet_id     = aws_subnet.public_subnet[0].id
 }
 
 resource "aws_route_table" "private_route_table" {
@@ -20,4 +20,8 @@ resource "aws_route_table_association" "private_association" {
   count          = 2
   subnet_id      = aws_subnet.private_subnet[count.index].id
   route_table_id = aws_route_table.private_route_table.id
+}
+
+data "aws_availability_zones" "available" {
+  state = "available"
 }

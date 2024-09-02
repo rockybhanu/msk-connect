@@ -4,20 +4,21 @@ resource "aws_msk_cluster" "ramanuj-dev" {
   number_of_broker_nodes = 2 # Two nodes for high availability
 
   broker_node_group_info {
-    instance_type = "kafka.t3.small" # Cheapest instance type for testing
+    instance_type = "kafka.t3.small"
 
-    client_subnets  = [aws_subnet.private_subnet[0].id, aws_subnet.private_subnet[1].id] # Use private subnets
+    client_subnets  = [aws_subnet.public_subnet[0].id, aws_subnet.public_subnet[1].id] # Use public subnets for MSK
     security_groups = [aws_security_group.msk_security_group.id]
 
     storage_info {
       ebs_storage_info {
-        volume_size = 100 # Minimal storage for testing
+        volume_size = 100
       }
     }
 
     connectivity_info {
       public_access {
-        type = "DISABLED" # Disabling public access, relying on NAT for internet
+        type = "SERVICE_PROVIDED_EIPS" # Enables public access to the brokers
+        #type = "DISABLED" # Enables public access to the brokers
       }
     }
   }
